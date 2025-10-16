@@ -208,3 +208,7 @@ __marimo__/
 
 
 .env
+client_secret.json
+api_test.py
+token.pickle
+
