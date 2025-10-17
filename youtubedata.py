@@ -9,6 +9,8 @@ import os
 import pickle
 import google.auth.transport.requests
 from google_auth_oauthlib.flow import InstalledAppFlow
+import time
+import numpy as np
 
 
 # --- Your Authentication Function ---
@@ -229,34 +231,6 @@ def clean_and_process_data(df):
     print("\nData cleaning and feature engineering complete.")
     return df
 
-#Step 5: Daily Aggregation Function
-
-def aggregate_youtube_data(df):
-    """
-    Groups the processed YouTube data by Trend_ID and Date to create a daily
-    time series summary, as required for the final dataset.
-    
-    The 'Date' column here represents the date the video was published.
-    """
-    
-    # Define aggregation logic for key numerical columns
-    # We sum the total activity (views, likes, comments) and average the feature metrics (engagement, duration)
-    agg_funcs = {
-        'video_id': 'count',                 # Count of videos published that day
-        'view_count': 'sum',                 # Total views from videos published that day
-        'like_count': 'sum',                 # Total likes from videos published that day
-        'comment_count': 'sum',              # Total comments from videos published that day
-        'engagement_rate': 'mean',           # Average engagement rate for that day's videos
-        'duration_seconds': 'mean',          # Average duration for that day's videos
-        'title_length': 'mean'               # Average title length for that day's videos
-    }
-    
-    # Group by the Trend Identifier and the Date of Publication
-    df_agg = df.groupby(['Trend_ID', 'Date']).agg(agg_funcs).reset_index()
-    df_agg.rename(columns={'video_id': 'daily_video_count'}, inplace=True)
-    
-    print("\nDaily aggregation by Trend_ID and Date complete.")
-    return df_agg
 
 #Step 6: Main Execution
 
@@ -320,19 +294,15 @@ if __name__ == '__main__':
         
         # 7. Clean and Engineer Features (Step 3) - Uses the corrected tz-aware function
         df_processed_combined = clean_and_process_data(df_raw_combined.copy())
-
-        # 8. Perform Daily Aggregation (Step 4 of the overall methodology)
-        df_final_aggregated = aggregate_youtube_data(df_processed_combined.copy())
         
-        # 9. Save the data to CSV files
-        PROCESSED_FILE = 'youtube_data_all_trends_aggregated.csv'
+        # 8. Save the data to CSV files
+        PROCESSED_FILE = 'youtube_data.csv'
         
         # Save the final aggregated DataFrame
         df_processed_combined.to_csv(PROCESSED_FILE, index=False)
         
         print(f"\n\n--- DATA COLLECTION SUCCESSFUL ---")
         print(f"Total rows collected: {len(df_raw_combined)} (raw video records)")
-        print(f"Total aggregated rows: {len(df_final_aggregated)} (daily trend records)")
         print(f"Processed data saved to: {PROCESSED_FILE}")
                 
     except Exception as e:
