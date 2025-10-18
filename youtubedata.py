@@ -240,7 +240,8 @@ if __name__ == '__main__':
     TREND_QUERIES = [
         'feta pasta',  
         'matcha', 
-        'dubai chocolate'
+        'dubai chocolate',
+        'airfryer'
     ]
     
     # A list to collect raw data from all trends
